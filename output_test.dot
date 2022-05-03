@@ -1,0 +1,119 @@
+digraph tree {
+    "0x26674024130" [label="Module"];
+    "0x26674024400" [label="FunctionDef"];
+    "0x26674024100" [label="arguments"];
+    "0x26674024610" [label="arg"];
+    "0x26674024430" [label="self"];
+    "0x26674024be0" [label="arg"];
+    "0x26674024790" [label="zeroValue"];
+    "0x26674024880" [label="arg"];
+    "0x266740249d0" [label="func"];
+    "0x266740245b0" [label="arg"];
+    "0x26674024d90" [label="numPartitions"];
+    "0x26674024850" [label="arg"];
+    "0x26674024370" [label="partitionFunc"];
+    "0x26674024b50" [label="Constant"];
+    "0x26674024490" [label="None"];
+    "0x266740243d0" [label="Name"];
+    "0x26674024c40" [label="portable_hash"];
+    "0x26674024f70" [label="Expr"];
+    "0x26674024310" [label="Constant"];
+    "0x266740241c0" [label="
+        Merge the values for each key using an associative function "func"
+        and a neutral "zeroValue" which may be added to the result an
+        arbitrary number of times, and must not change the result
+        (e.g., 0 for addition, or 1 for multiplication.).
+
+        >>> rdd = sc.parallelize([("a", 1), ("b", 1), ("a", 1)])
+        >>> from operator import add
+        >>> sorted(rdd.foldByKey(0, add).collect())
+        [('a', 2), ('b', 1)]
+        "];
+    "0x26674024cd0" [label="FunctionDef"];
+    "0x266697a8d30" [label="arguments"];
+    "0x266697a8100" [label="Return"];
+    "0x266697a85b0" [label="Call"];
+    "0x266697a8e50" [label="Attribute"];
+    "0x266697a8790" [label="Name"];
+    "0x266697a83a0" [label="copy"];
+    "0x266697a8370" [label="Name"];
+    "0x266697a8700" [label="zeroValue"];
+    "0x266697a8910" [label="Return"];
+    "0x266697a8d00" [label="Call"];
+    "0x266697a8b50" [label="Attribute"];
+    "0x266697a82b0" [label="Name"];
+    "0x266697a8cd0" [label="self"];
+    "0x266697a8850" [label="Lambda"];
+    "0x266697a8670" [label="arguments"];
+    "0x2667408f9a0" [label="arg"];
+    "0x2667408ff40" [label="v"];
+    "0x266697a8be0" [label="Call"];
+    "0x2667408fc70" [label="Name"];
+    "0x2667408f5b0" [label="func"];
+    "0x2667408f4f0" [label="Call"];
+    "0x26674085250" [label="Name"];
+    "0x26674085910" [label="createZero"];
+    "0x2667408fbb0" [label="Name"];
+    "0x266740852e0" [label="v"];
+    "0x266697a8580" [label="Name"];
+    "0x266697a87c0" [label="func"];
+    "0x2667408fe20" [label="Name"];
+    "0x26674085cd0" [label="func"];
+    "0x26674085af0" [label="Name"];
+    "0x26674085970" [label="numPartitions"];
+    "0x26674085b20" [label="Name"];
+    "0x26674085220" [label="partitionFunc"];
+    "0x26674024130" -> "0x26674024400";
+    "0x26674024400" -> "0x26674024100";
+    "0x26674024400" -> "0x26674024f70";
+    "0x26674024400" -> "0x26674024cd0";
+    "0x26674024400" -> "0x266697a8910";
+    "0x26674024100" -> "0x26674024610";
+    "0x26674024100" -> "0x26674024be0";
+    "0x26674024100" -> "0x26674024880";
+    "0x26674024100" -> "0x266740245b0";
+    "0x26674024100" -> "0x26674024850";
+    "0x26674024100" -> "0x26674024b50";
+    "0x26674024100" -> "0x266740243d0";
+    "0x26674024610" -> "0x26674024430";
+    "0x26674024be0" -> "0x26674024790";
+    "0x26674024880" -> "0x266740249d0";
+    "0x266740245b0" -> "0x26674024d90";
+    "0x26674024850" -> "0x26674024370";
+    "0x26674024b50" -> "0x26674024490";
+    "0x266740243d0" -> "0x26674024c40";
+    "0x26674024f70" -> "0x26674024310";
+    "0x26674024310" -> "0x266740241c0";
+    "0x26674024cd0" -> "0x266697a8d30";
+    "0x26674024cd0" -> "0x266697a8100";
+    "0x266697a8100" -> "0x266697a85b0";
+    "0x266697a85b0" -> "0x266697a8e50";
+    "0x266697a85b0" -> "0x266697a8370";
+    "0x266697a8e50" -> "0x266697a8790";
+    "0x266697a8790" -> "0x266697a83a0";
+    "0x266697a8370" -> "0x266697a8700";
+    "0x266697a8910" -> "0x266697a8d00";
+    "0x266697a8d00" -> "0x266697a8b50";
+    "0x266697a8d00" -> "0x266697a8850";
+    "0x266697a8d00" -> "0x266697a8580";
+    "0x266697a8d00" -> "0x2667408fe20";
+    "0x266697a8d00" -> "0x26674085af0";
+    "0x266697a8d00" -> "0x26674085b20";
+    "0x266697a8b50" -> "0x266697a82b0";
+    "0x266697a82b0" -> "0x266697a8cd0";
+    "0x266697a8850" -> "0x266697a8670";
+    "0x266697a8850" -> "0x266697a8be0";
+    "0x266697a8670" -> "0x2667408f9a0";
+    "0x2667408f9a0" -> "0x2667408ff40";
+    "0x266697a8be0" -> "0x2667408fc70";
+    "0x266697a8be0" -> "0x2667408f4f0";
+    "0x266697a8be0" -> "0x2667408fbb0";
+    "0x2667408fc70" -> "0x2667408f5b0";
+    "0x2667408f4f0" -> "0x26674085250";
+    "0x26674085250" -> "0x26674085910";
+    "0x2667408fbb0" -> "0x266740852e0";
+    "0x266697a8580" -> "0x266697a87c0";
+    "0x2667408fe20" -> "0x26674085cd0";
+    "0x26674085af0" -> "0x26674085970";
+    "0x26674085b20" -> "0x26674085220";
+}

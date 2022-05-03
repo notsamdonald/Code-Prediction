@@ -1,0 +1,14 @@
+Pipeline:
+
+* = todo
+
+code -> split -> ast -> graph -> ast_tokenizer -> GAE * -> linearized AST * = ast input *
+
+graphs -> all words -> train tokenizer -> ast_tokenizer * 
+
+split * -> codebert tokenizer -> code input *
+
+code input * + ast input * -> codeBert finetune *-> split target *
+	- also need to figure out if both can be passed into bert
+	- or just going to have to go with a FCC layer
+		- if so, how to deal with the dynamic size? padding?
