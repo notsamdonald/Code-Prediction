@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 from anytree import Node
 import ast
-from GAE_generate_graph_tensors import ast_visit,graph_to_dict,make_graph_tensors
+from Graph_generator import ast_visit,graph_to_dict,make_graph_tensors
 import pickle
 from transformers import AdamW, AutoTokenizer, AutoModelForSequenceClassification
 import torch.nn as nn

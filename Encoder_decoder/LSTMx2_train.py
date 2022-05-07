@@ -7,12 +7,13 @@ from tqdm import tqdm
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = "cpu"
 
 with open('train_data(input_target_z).pkl', 'rb') as handle:
     input_tokens, target_tokens, embedded_graphs = pickle.load(handle)
 
 
-model = Code_GPT_modified(50001, 768, 768, 1)
+model = Code_GPT_modified(50001, 768, 768, 2)
 model = model.to(device)
 optimizer = AdamW(model.parameters(), lr=0.001)
 

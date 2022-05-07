@@ -8,9 +8,9 @@ import numpy as np
 from tqdm import tqdm
 from anytree import Node
 import ast
-from GAE_generate_graph_tensors import ast_visit,graph_to_dict,make_graph_tensors
+from Graph_generator import ast_visit,graph_to_dict,make_graph_tensors
 import pickle
-from GAE_generate_graph_tensors import generate_AST_graph_tensor
+from Graph_generator import generate_AST_graph_tensor
 from torch_geometric.nn import GAE
 from GAE_training import GCNEncoder
 from torch_geometric.utils import train_test_split_edges
@@ -31,10 +31,12 @@ model = torch.load('GAE')
 model.eval()
 model.to(device)
 
+split_type = "validation"
+dataset_size = 1000
 
-for i, function in tqdm(enumerate(dataset['train'])):
+for i, function in tqdm(enumerate(dataset[split_type])):
 
-    if i > 1000:
+    if i > dataset_size:
         break
 
     function_string = function['func_code_string']
@@ -49,9 +51,6 @@ for i, function in tqdm(enumerate(dataset['train'])):
 
         target_token = tokens[split_id]
         input_token = tokens[:split_id]
-
-        input_tokens.append(input_token)
-        target_tokens.append(target_token)
 
         if True:
             # AST Generation
@@ -84,7 +83,7 @@ for i, function in tqdm(enumerate(dataset['train'])):
 
 
 data = (input_tokens, target_tokens, embedded_graphs)
-with open('train_data(input_target_z).pkl', 'wb') as handle:
+with open('{}_data(input_target_z).pkl'.format(split_type), 'wb') as handle:
     pickle.dump(data, handle)
 
 #with open('train_data(input_target_z).pkl', 'rb') as handle:
