@@ -37,7 +37,7 @@ def main():
         train_graph_tensors, val_graph_tensors = pickle.load(fp)
 
     # Model config
-    out_channels = 8
+    out_channels = 16
     num_features = train_graph_tensors[0].num_features  # 5
     model = GAE(GCNEncoder(num_features, out_channels))
     model = model.to(device)
@@ -143,7 +143,7 @@ def main():
 
     # Saving model:
     # TODO!
-    torch.save(model, "GAE")
+    torch.save(model, "GAE_4")
 
     # Plotting results of training
     plt.plot(np.linspace(0, epochs, len(running_mean(loss_tracker, training_size))),
@@ -171,7 +171,7 @@ def main():
                    precision_tracker, recall_tracker, f1_tracker,
                    TP_tracker, FN_tracker, TN_tracker, FP_tracker)
 
-    with open('GAE_graph_training_info.pkl', 'wb') as handle:
+    with open('GAE_graph_training_info_16_output.pkl', 'wb') as handle:
         pickle.dump(output_info, handle)
 
 

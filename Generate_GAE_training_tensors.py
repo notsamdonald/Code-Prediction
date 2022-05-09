@@ -1,7 +1,7 @@
 from datasets import load_dataset
 
 from Graph_generator import split_index, generate_AST_graph_tensor
-
+import numpy as np
 if __name__ == "__main__":
 
     dataset = load_dataset("code_search_net", "python")
@@ -26,5 +26,5 @@ if __name__ == "__main__":
     # Saving GAE Graphs
     import pickle
 
-    with open('GAE_graph_tensors_2.pkl', 'wb') as handle:
+    with open('GAE_graph_tensors_bidirectional.pkl', 'wb') as handle:
         pickle.dump(output_graph_tensors, handle)

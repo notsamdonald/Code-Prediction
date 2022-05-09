@@ -101,7 +101,7 @@ def make_graph_tensors(ast_dict_list):
             else:
                 vocab[node_name] = node_id
 
-        base = [0] * feature_len  # TODO this  needs to be dynamic somehow, could use an unk token maybe (Done)
+        base = [0] * feature_len
         base[node_id] = 1
 
         graph_node_names.append(node_name)
@@ -110,7 +110,7 @@ def make_graph_tensors(ast_dict_list):
 
         if len(graph_nodes) > 1:
             graph_edges.append([parent_id, len(graph_nodes) - 1])
-            # graph_edges.append([len(graph_nodes)-1,parent_id])
+            graph_edges.append([len(graph_nodes)-1,parent_id])
 
         parent_id = len(graph_nodes) - 1
 
@@ -159,6 +159,11 @@ def generate_AST_graph_tensor(data):
             ast_graph = ast_visit(ast.parse(function), parent_node=Node("Root"))
             ast_dict = graph_to_dict(ast_graph)
             ast_dicts.append(ast_dict)
+
+            if len(function)<300 and len(function)>200:
+                save_ast_graph(ast_graph, "ast_graphs/output_AST_for_report".format(i))# - for generating pngs
+                print("")
+
         except SyntaxError:
             # Occasionally some code will not compile into an AST
             pass

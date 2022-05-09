@@ -33,13 +33,30 @@ class COMB_Arch(nn.Module):
         # dense layer 2 (Output layer)
         self.fc2 = nn.Linear(50001, 50001)
 
+        self.output_1 = nn.Linear(768, 768*2) # We can add the hidden layer into this!
+        self.output_2 = nn.Linear(768*2, 50001) # We can add the hidden layer into this!
+
         # softmax activation function
         self.softmax = nn.LogSoftmax(dim=1)
 
+        self.criterion = nn.CrossEntropyLoss()
+
     # define the forward pass
-    def forward(self, sent_id, mask):
+    def forward(self, input_tensor,labels):
         # pass the inputs to the model
-        code_gpt_out = self.code_gpt(sent_id, attention_mask=mask)
+        code_gpt_out = self.code_gpt(input_tensor,labels=input_tensor)
+
+        hidden = code_gpt_out.hidden_states[12]
+
+        x = self.output_1(hidden)
+        x = self.relu(x)
+        x = self.output_2(x)
+        x = self.softmax(x)
+
+        loss = self.criterion(torch.softmax(x, dim=-1).squeeze()[1:,:],input_tensor.squeeze()[:-1])
+
+        return x, loss
+
 
         final_token = code_gpt_out.logits[:, :, -1, :]
 
@@ -66,24 +83,39 @@ with open('train_data_100.pkl', 'rb') as handle:
 
 gpt = AutoModelForCausalLM.from_pretrained("microsoft/CodeGPT-small-py")
 tokenizer = GPT2TokenizerFast.from_pretrained("microsoft/CodeGPT-small-py", add_prefix_space=True)
-model = gpt
-optimizer = AdamW(model.parameters(), lr=0.001)
+gpt_model = gpt
+gpt_model.config.output_hidden_states = True
 
-id = 0
-for id in range(len(input_tokens)):
-    test_input = input_tokens[id]
-    input_tensor = torch.tensor(test_input).reshape(1, 1, -1).to(device)
-    # test_target = test_input[:]
-    # test_target.append(target_tokens[id])
-    target_token = target_tokens[id]
-    target = torch.nn.functional.one_hot(torch.tensor(target_token), num_classes=50001)
+# freeze all the parameters
+for param in gpt_model.parameters():
+    param.requires_grad = False
 
-    #output = model(torch.tensor(test_input).reshape(-1,1), labels=torch.tensor(test_target).reshape(-1,1), attention_mask=torch.ones(len(test_input)).reshape(-1,1))
-    output = model(input_tensor, hidden=torch.tensor([1,2,3]).reshape(1,1,-1),labels=input_tensor)
-    #output_str = tokenizer.decode(torch.argmax(torch.softmax(output.logits, dim=2), dim=-1).reshape(-1).numpy())
-    loss = output.loss
-    loss.backward()
-    optimizer.step()
-    optimizer.zero_grad()
-    print(loss.item())
-print("")
+
+model = COMB_Arch(gpt_model)
+
+optimizer = AdamW(model.parameters(), lr=0.01)
+
+for epoch in range(10):
+    epoch_loss = []
+    for id in tqdm(range(len(input_tokens))):
+        input = input_tokens[id]
+        input_tensor = torch.tensor(input).reshape(1, 1, -1).to(device)
+
+        target = input[1:]
+        target.append(target_tokens[id])
+
+        target_tensor = torch.tensor(target).reshape(1, 1, -1).to(device)
+
+        # test_target.append(target_tokens[id])
+
+        # output = model(torch.tensor(test_input).reshape(-1,1), labels=torch.tensor(test_target).reshape(-1,1), attention_mask=torch.ones(len(test_input)).reshape(-1,1))
+        output = model(input_tensor, labels=input_tensor)
+        # output_str = tokenizer.decode(torch.argmax(torch.softmax(output.logits, dim=2), dim=-1).reshape(-1).numpy())
+        loss = output[1]
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+        epoch_loss.append(loss.item())
+
+        #print(np.average(epoch_loss[-100:]))
+        print(epoch_loss[-1])
