@@ -1,8 +1,11 @@
+"""
+A collation of support functions used to generate and process AST graphs based on input Python functions
+"""
+
 import ast
 
 import anytree
 import torch
-import torch_geometric.transforms as T
 from anytree import Node
 from anytree.exporter import DictExporter
 from graphviz import Source
@@ -43,6 +46,8 @@ def ast_visit(node, parent_node, level=0):
 
 
 def get_all_keys(d):
+    # Get all keys within the AST dictionary
+
     for key, value in d.items():
 
         if isinstance(value, str):
@@ -58,15 +63,17 @@ def get_all_keys(d):
 
 
 def save_ast_graph(ast_graph, output_name):
-    output_file = '{}.dot'.format(output_name)
+    # Rendering and saving AST graph
 
+    output_file = '{}.dot'.format(output_name)
     anytree.exporter.dotexporter.UniqueDotExporter(ast_graph).to_dotfile(output_file)
     Source.from_file(output_file)
-
     render('dot', 'png', output_file)
 
 
 def get_graph_words(ast_dict):
+    # Get all words within AST graph (nodes)
+
     words = []
     for x in get_all_keys(ast_dict):
         words.append(x)
@@ -74,14 +81,16 @@ def get_graph_words(ast_dict):
 
 
 def graph_to_dict(ast_graph):
+    # Converting AST graph to dictionary
+
     exporter = DictExporter()
     ast_dict = exporter.export(ast_graph)
     return ast_dict
 
 
 def save_ast_words(ast_words, output_file='ast_graph_words.txt'):
-    # TODO - fix to work with list of list (?)
-    # Currently assuming its a 2D list (containing words for each function)
+    # Save AST words/node names (unused currently)
+
     with open(output_file, 'w', encoding="utf-8") as f:
         for ast_data in ast_words:
             f.write(" ".join(ast_data))
@@ -89,6 +98,8 @@ def save_ast_words(ast_words, output_file='ast_graph_words.txt'):
 
 
 def make_graph_tensors(ast_dict_list):
+    # Converts a given AST dictionary into a tensor by walking it and extracting edge/node information
+
     def make_graph_tensor(ast_dict, parent_id=0):
 
         node_name = ast_dict['name']
@@ -100,17 +111,16 @@ def make_graph_tensors(ast_dict_list):
                 node_id = 0  # UNK (Overflowing)
             else:
                 vocab[node_name] = node_id
-
         base = [0] * feature_len
         base[node_id] = 1
-
         graph_node_names.append(node_name)
-
         graph_nodes.append(base)
 
+        # TODO - Currently configured to Bi-directional encoding, make this dynamic
+        # Extracting edge information
         if len(graph_nodes) > 1:
             graph_edges.append([parent_id, len(graph_nodes) - 1])
-            graph_edges.append([len(graph_nodes)-1,parent_id])
+            graph_edges.append([len(graph_nodes) - 1, parent_id])
 
         parent_id = len(graph_nodes) - 1
 
@@ -132,25 +142,20 @@ def make_graph_tensors(ast_dict_list):
         edge_index = torch.tensor(graph_edges, dtype=torch.long)
         x = torch.tensor(graph_nodes, dtype=torch.float)
 
-        transform = T.Compose([
-            T.NormalizeFeatures(),
-            T.ToDevice(device),
-            T.RandomLinkSplit(num_val=0.05, num_test=0.1, is_undirected=True,
-                              split_labels=True, add_negative_train_samples=False),
-        ])
-
-        data = Data(x=x,
-                    edge_index=edge_index.t().contiguous())  # , transform=transform) TODO - confirm this is not wanted
+        data = Data(x=x, edge_index=edge_index.t().contiguous())
         encoded_graph_list.append(data)
 
     return encoded_graph_list
 
 
 def split_index(length, ratio=0.001):
+    # Support funtion to split datasets
     return (int(length * (1 - ratio)))
 
 
 def generate_AST_graph_tensor(data):
+    # Master function calling subroutines to generate an AST graph
+
     ast_dicts = []
     print("Generating AST Dictionaries...")
 
@@ -159,10 +164,6 @@ def generate_AST_graph_tensor(data):
             ast_graph = ast_visit(ast.parse(function), parent_node=Node("Root"))
             ast_dict = graph_to_dict(ast_graph)
             ast_dicts.append(ast_dict)
-
-            if len(function)<300 and len(function)>200:
-                save_ast_graph(ast_graph, "ast_graphs/output_AST_for_report".format(i))# - for generating pngs
-                print("")
 
         except SyntaxError:
             # Occasionally some code will not compile into an AST
